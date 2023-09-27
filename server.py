@@ -8,10 +8,22 @@
 #                                  "folder": "folder name"}
 
 from flask import Flask, request, jsonify
-import json
 
+import json
 import os
-#from google.cloud import storage
+import codecs
+
+from google.cloud import storage
+from google.oauth2 import service_account
+#import secrets/iam.json
+
+credentials = service_account.Credentials.from_service_account_file('/secrets/key.json')
+
+# scoped_credentials = credentials.with_scopes(
+#     ['https://www.googleapis.com/auth/cloud-platform'])
+
+storage_client = storage.Client(project='brig-b2ca3', credentials=credentials)
+
 print("init1", __name__)
 app = Flask(__name__)
 
@@ -20,9 +32,18 @@ print("init2")
 
 @app.route('/', methods=['GET'])
 def index():
-    print("get request")
-    return "<h1 style='color:blue'>Hello There!</h1>"
-#storage_client = storage.Client(projectID)
+    #if there is a ./model folder get *.png from it and return tiled view
+    def imageTile(url):
+        return "<img src=\"" + url + "\" width=\"100\" height=\"100\">"
+    
+    #check if there is a model folder
+    if os.path.isdir("model"):
+        #get all the pngs
+        pngs = os.listdir("model")
+        #return the tiled view
+        return "<html><body>" + "".join(list(map(imageTile, pngs))) + "</body></html>"
+    else:
+        return "<html><body>no model</body></html>"
 
 @app.route('/', methods=['POST'])
 def get():
@@ -30,31 +51,34 @@ def get():
     if request.is_json:
         print("request is json")
         #get json
-        try:
-            req = request.get_json()
-        except:
-            print("error getting json")
-            print(request.data)
-            #request json has a b'' in front of it
-            req = json.loads(request.data[1:])
 
-        print(req)
+        print(request.get_json())
         
+        print(request)
+        #req = request.get_json()
+        req = request.data.decode()
+        print(req)
+
+        req =json.loads(req)
+        
+        print(req)
+
         csv = req['csv']
         model = req['model']
         bucket = req['bucket']
-        folder = req['folder']
 
         print("csv: " + csv)
         print("model: " + model)
         print("bucket: " + bucket)
-        print("folder: " + folder)
+        
+        #check if model folder exists
+        if os.path.isdir("model"):
+            os.system("rm -rf model")
+
         #create folder and download model
         os.system("mkdir model")
 
-        #os.system("gcloud storage cp " + model + " model/model.glb")
-        #temporary, copy default model from /server/Arroyo.glb
-        os.system("cp Arroyo.glb model/model.glb")
+        download_blob(bucket, model, "model/model.glb")
 
         #write csv file in same folder
         with open("model/model.csv", "w") as file:
@@ -72,12 +96,36 @@ def get():
         # blob.upload_from_filename("model/output")
 
         #force rm the directory
-        os.system("rm -rf model")
-
+        
         #return the response
         return jsonify({"response": "OK"}), 200
 
     else:
         print("request is not json")
         return jsonify({"error": "request is not json"}), 400
-    
+
+def download_blob(bucket_name, source_blob_name, destination_file_name):
+    """Downloads a blob from the bucket."""
+    # The ID of your GCS bucket
+    # bucket_name = "your-bucket-name"
+
+    # The ID of your GCS object
+    # source_blob_name = "storage-object-name"
+
+    # The path to which the file should be downloaded
+    # destination_file_name = "local/path/to/file"
+
+    bucket = storage_client.bucket(bucket_name)
+
+    # Construct a client side representation of a blob.
+    # Note `Bucket.blob` differs from `Bucket.get_blob` as it doesn't retrieve
+    # any content from Google Cloud Storage. As we don't need additional data,
+    # using `Bucket.blob` is preferred here.
+    blob = bucket.blob(source_blob_name)
+    blob.download_to_filename(destination_file_name)
+
+    print(
+        "Downloaded storage object {} from bucket {} to local file {}.".format(
+            source_blob_name, bucket_name, destination_file_name
+        )
+    )
