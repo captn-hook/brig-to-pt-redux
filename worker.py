@@ -6,6 +6,8 @@ import csv
 import math
 from mathutils import Vector
 
+print("Starting script")
+
 dcolor = (1, .25, .25)
 tcolor = (.25, .25, 1)
 nullcolor = (1, 1, 1)

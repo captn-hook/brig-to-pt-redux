@@ -32,18 +32,41 @@ print("init2")
 
 @app.route('/', methods=['GET'])
 def index():
+    #create the html
+    html = ""
+    
+
     #if there is a ./model folder get *.png from it and return tiled view
     def imageTile(url):
         return "<img src=\"" + url + "\" width=\"100\" height=\"100\">"
     
     #check if there is a model folder
     if os.path.isdir("model"):
+        #return a tree of the container
+        tree = os.walk("./model")
+        for root, dirs, files in tree:
+            html += "<b>" + root + "</b><br>"
+            for file in files:
+                html += file + "<br>"
+            html += "<br>"
+        #if there is a csv display it
+        if os.path.isfile("model/model.csv"):
+            html += "<b>model.csv</b><br>"
+            with open("model/model.csv", "r") as file:
+                html += file.read() + "<br><br>"
+                
         #get all the pngs
-        pngs = os.listdir("model")
-        #return the tiled view
-        return "<html><body>" + "".join(list(map(imageTile, pngs))) + "</body></html>"
+        files = os.listdir("model")
+        pngs = []
+        for file in files:
+            if file.endswith(".png"):
+                pngs.append(file)
+     
+        for png in pngs:
+            html += imageTile(png)
+        return html
     else:
-        return "<html><body>no model</body></html>"
+        return "no model folder"
 
 @app.route('/', methods=['POST'])
 def get():
@@ -51,6 +74,7 @@ def get():
     if request.is_json:
         print("request is json")
         #get json
+        print(request)
 
         print(request.get_json())
         
