@@ -12,12 +12,16 @@ import json
 
 import os
 #from google.cloud import storage
-print("init1")
+print("init1", __name__)
 app = Flask(__name__)
 
 print("init2")
 #import projectID from secret
 
+@app.route('/', methods=['GET'])
+def index():
+    print("get request")
+    return "<h1 style='color:blue'>Hello There!</h1>"
 #storage_client = storage.Client(projectID)
 
 @app.route('/', methods=['POST'])
@@ -77,7 +81,3 @@ def get():
         print("request is not json")
         return jsonify({"error": "request is not json"}), 400
     
-@app.route('/', methods=['GET'])
-def index():
-    print("get request")
-    return "<h1 style='color:blue'>Hello There!</h1>"
