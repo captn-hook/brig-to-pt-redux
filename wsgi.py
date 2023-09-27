@@ -1,4 +1,3 @@
 from server import app
-
-if __name__ == "__main__":
-    app.run()
+print("running")
+app.run(host='localhost', port=6743, debug=False)
