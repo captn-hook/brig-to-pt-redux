@@ -635,12 +635,8 @@ for file in os.listdir(folder):
         csv_file = os.path.join(folder, file)
     if file.endswith(".glb"):
         glb_file = os.path.join(folder, file)
+        model = bpy.ops.import_scene.gltf(filepath=glb_file)
 
-print(csv_file, glb_file)
-
-
-# import glb
-model = bpy.ops.import_scene.gltf(filepath=glb_file)
 # move to collection "C"
 for obj in bpy.data.objects:
     bpy.data.collections["C"].objects.link(obj)

@@ -11,7 +11,6 @@ from flask import Flask, request, jsonify
 
 import json
 import os
-import codecs
 
 from google.cloud import storage
 from google.oauth2 import service_account
@@ -119,13 +118,7 @@ def get():
         print("done?")
 
         #upload the model/output to bucket/model/output
-        #   bucket = storage_client.get_bucket(bucket_name)
-        #  blob = bucket.blob(folder_name + "/output")
-        #upload folder
-        # blob.upload_from_filename("model/output")
-
-        #force rm the directory
-        
+        #model root = slice of /model.glb\
         #return the response
         return jsonify({"response": "OK"}), 200
 
@@ -158,3 +151,4 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
             source_blob_name, bucket_name, destination_file_name
         )
     )
+

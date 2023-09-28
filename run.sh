@@ -11,8 +11,8 @@ length=$(head -n 1 $1/*.csv | tr ',' '\n' | wc -l)
 echo $length
 
 # the python script will configure the compositer and render from --render-output to --render-output/(opaque|transparent|background)/number.png
-./blender/blender --background --python worker.py -- "$@" 
-./blender/blender --background -a --render-frame 0..$length --render-output $1/output/
+./blender/blender -b --python worker.py -- "$@" 
+./blender/blender -b ./model/output.blend -s 0 -e $length -a -o //model/output/
 #then rename img 0 to Overview.png and 1..n.png to XLabel[n].png
 echo done rendering
 echo $(ls $1/output/*.png)
@@ -23,20 +23,25 @@ labels=$(head -n 1 $1/*.csv | tr ',' '\n' | tail -n +2)
 echo $labels
 
 
-# #for every folder in output
-# for folder in $1/output/*; do
-#     #for every file in folder
-#     for file in $folder/*; do
-#         #if file is a png
-#         if [[ $file == *.png ]]; then
-#             #if file is not Overview.png
-#             if [[ $file != *0.png ]]; then
-#                 #rename file to XLabel[n].png
-#                 mv $file $folder/$(echo $labels | cut -d' ' -f$(echo $file | cut -d'/' -f3 | cut -d'.' -f1))
-#             else
-#                 #rename file to Overview.png
-#                 mv $file $folder/Overview.png
-#             fi
-#         fi
-#     done
-# done
+#for every folder in output
+for folder in $1/output/*; do
+    #for every file in folder
+    for file in $folder/*; do
+        #if file is a png
+        if [[ $file == *.png ]]; then
+            #if file is not Overview.png
+            if [[ $file != *0.png ]]; then
+                #rename file to XLabel[n].png
+                mv $file $folder/$(echo $labels | cut -d' ' -f$(echo $file | cut -d'/' -f3 | cut -d'.' -f1))
+            else
+                #rename file to Overview.png
+                mv $file $folder/Overview.png
+            fi
+        fi
+    done
+done
+
+echo done renaming
+echo uploading images 
+
+python3 upload.py $1/output/
