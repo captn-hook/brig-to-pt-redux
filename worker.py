@@ -624,7 +624,7 @@ def getViews(csv_file):
     return views
 
 #opens the template file C:\Users\trist\brig-to-pt-1\blender\template.blend
-bpy.ops.wm.open_mainfile(filepath="./blender/template.blend")
+bpy.ops.wm.open_mainfile(filepath="./template.blend")
 
 # grabs the folder from the command line
 folder = sys.argv[5]
