@@ -691,6 +691,9 @@ bpy.context.scene.frame_start = 0
 
 #set render settings
 bpy.context.scene.render.engine = 'BLENDER_EEVEE'
+#frame start and end
+bpy.context.scene.frame_start = 0
+bpy.context.scene.frame_end = len(views) + 1
 
 #set output to png and folder to <folder>/output
 bpy.context.scene.render.image_settings.file_format = 'PNG'

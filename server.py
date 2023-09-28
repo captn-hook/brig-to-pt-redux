@@ -64,6 +64,11 @@ def index():
      
         for png in pngs:
             html += imageTile(png)
+        #check /tmp/%04d.png
+        for i in range(100):
+            if os.path.isfile("/tmp/%04d.png" % i):
+                html += imageTile("/tmp/%04d.png" % i)
+                
         return html
     else:
         return "no model folder"
