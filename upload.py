@@ -41,6 +41,7 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
     )
 
 def upload_local_directory_to_gcs(local_path, bucket, gcs_path):
+    print("uploading", local_path, bucket, gcs_path)
     assert os.path.isdir(local_path)
     for local_file in glob.glob(local_path + '/**'):
         if not os.path.isfile(local_file):
