@@ -106,7 +106,12 @@ def get():
 
         #write csv file in same folder
         with open("model/model.csv", "w") as file:
+            print("writing csv", csv)
             file.write(csv)
+
+        #log the csv file
+        with open("model/model.csv", "r") as file:
+            print(file.read())
 
         #run the shell script
         os.system("sh run.sh model")
