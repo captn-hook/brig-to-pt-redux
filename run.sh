@@ -17,31 +17,43 @@ echo $length
 # echo done rendering
 # echo $(ls $1/output/*.png)
 #blender --background --python ./container/app/server/worker.py -- "$@" #--render-frame 0..$length --render-output $1/output/
-blender/blender -b --python ./container/app/server/worker.py -- "$@" #--render-frame 0..$length --render-output $1/output/
-#pause for user
-#read -p "Press enter to continue"
-#blender --background  $1/output.blend --render-frame 0..$length --render-output $1/output/
-blender/blender -b $1/output.blend --render-frame 0..$length --render-output $1/output/
+# blender/blender -b --python ./container/app/server/worker.py -- "$@" #--render-frame 0..$length --render-output $1/output/
+# #pause for user
+# #read -p "Press enter to continue"
+# #blender --background  $1/output.blend --render-frame 0..$length --render-output $1/output/
+# blender/blender -b $1/output.blend --render-frame 0..$length --render-output $1/output/
+# the python script will configure the compositer and render from --render-output to --render-output/(opaque|transparent|background)/number.png
+./blender/blender -b --python worker.py -- "$@" 
+./blender/blender -b ./model/output.blend -s 0 -e $length -a -o //model/output/
+#then rename img 0 to Overview.png and 1..n.png to XLabel[n].png
+echo done rendering
+echo $(ls $1/output/*.png)
+
 #get row 0 of csv
 #remove first column (loop below will start at 0 and skip first elem of this array)
 labels=$(head -n 1 $1/*.csv | tr ',' '\n' | tail -n +2)
 echo $labels
 
 
-# #for every folder in output
-# for folder in $1/output/*; do
-#     #for every file in folder
-#     for file in $folder/*; do
-#         #if file is a png
-#         if [[ $file == *.png ]]; then
-#             #if file is not Overview.png
-#             if [[ $file != *0.png ]]; then
-#                 #rename file to XLabel[n].png
-#                 mv $file $folder/$(echo $labels | cut -d' ' -f$(echo $file | cut -d'/' -f3 | cut -d'.' -f1))
-#             else
-#                 #rename file to Overview.png
-#                 mv $file $folder/Overview.png
-#             fi
-#         fi
-#     done
-# done
+#for every folder in output
+for folder in $1/output/*; do
+    #for every file in folder
+    for file in $folder/*; do
+        #if file is a png
+        if [[ $file == *.png ]]; then
+            #if file is not Overview.png
+            if [[ $file != *0.png ]]; then
+                #rename file to XLabel[n].png
+                mv $file $folder/$(echo $labels | cut -d' ' -f$(echo $file | cut -d'/' -f3 | cut -d'.' -f1))
+            else
+                #rename file to Overview.png
+                mv $file $folder/Overview.png
+            fi
+        fi
+    done
+done
+
+echo done renaming
+echo uploading images 
+
+python3 upload.py $1/output/

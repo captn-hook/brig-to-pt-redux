@@ -624,7 +624,7 @@ def getViews(csv_file):
     return views
 
 #opens the template file C:\Users\trist\brig-to-pt-1\blender\template.blend
-bpy.ops.wm.open_mainfile(filepath="./blender/template.blend")
+bpy.ops.wm.open_mainfile(filepath="./template.blend")
 
 # grabs the folder from the command line
 folder = sys.argv[5]
@@ -635,12 +635,8 @@ for file in os.listdir(folder):
         csv_file = os.path.join(folder, file)
     if file.endswith(".glb"):
         glb_file = os.path.join(folder, file)
+        model = bpy.ops.import_scene.gltf(filepath=glb_file)
 
-print(csv_file, glb_file)
-
-
-# import glb
-model = bpy.ops.import_scene.gltf(filepath=glb_file)
 # move to collection "C"
 for obj in bpy.data.objects:
     bpy.data.collections["C"].objects.link(obj)
@@ -691,6 +687,9 @@ bpy.context.scene.frame_start = 0
 
 #set render settings
 bpy.context.scene.render.engine = 'BLENDER_EEVEE'
+#frame start and end
+bpy.context.scene.frame_start = 0
+bpy.context.scene.frame_end = len(views) + 1
 
 #set output to png and folder to <folder>/output
 bpy.context.scene.render.image_settings.file_format = 'PNG'
