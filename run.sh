@@ -28,6 +28,7 @@ for folder in $1/output/*; do
     #for every file in folder
     for file in $folder/*; do
         #if file is a png
+        echo $file
         if [[ $file == *.png ]]; then
             #if file is not Overview.png
             if [[ $file != *0.png ]]; then

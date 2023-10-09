@@ -11,6 +11,7 @@ from flask import Flask, request, jsonify
 
 import json
 import os
+import subprocess
 
 from google.cloud import storage
 from google.oauth2 import service_account
@@ -117,15 +118,11 @@ def get():
         with open("model/model.csv", "r") as file:
             print(file.read())
 
-        #run the shell script
-        os.system("sh run.sh model")
+        #run the shell script and return the response concurrently
+        subprocess.Popen("sh run.sh model", shell=True)
+        return jsonify({"status": "OK"}), 200
 
-        print("done?")
-
-        #upload the model/output to bucket/model/output
-        #model root = slice of /model.glb\
-        #return the response
-        return jsonify({"response": "OK"}), 200
+        #os.system("sh run.sh model")
 
     else:
         print("request is not json")
