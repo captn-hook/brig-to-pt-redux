@@ -46,9 +46,21 @@ single image gen
 
 #notes
 files need better naming for upload
-first letter of images is getting clipped
+    create different folders besides /output
+    
+first letter of images is getting clipped?
+
 upload .blend
+    make sure names are correct
 fix cameras
+    cameras have inverted y coord
 put invis plane in brig for click
+    need a invisible plane at the lowest point of the model, allowing clicks to be registered outside of the model
 image viewer
+    show catalog of images for each site
 single image gen
+    read .blend or generate, and render that one camera
+drag dots
+    check if over a dot before panning camera
+fix linking
+    make reloads work
