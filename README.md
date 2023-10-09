@@ -43,3 +43,12 @@ fix cameras
 put invis plane in brig for click
 image viewer
 single image gen
+
+#notes
+files need better naming for upload
+first letter of images is getting clipped
+upload .blend
+fix cameras
+put invis plane in brig for click
+image viewer
+single image gen
